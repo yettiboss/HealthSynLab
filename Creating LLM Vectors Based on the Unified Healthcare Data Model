@@ -1,0 +1,55 @@
+## Overview
+
+This document outlines the process of generating LLM (Large Language Model) vectors from the Unified Healthcare Data Model. These vectors can be used for various NLP tasks such as text classification, information retrieval, and similarity search.
+
+## Step 1: Identify Key Data Points
+
+Identify the key fields in the data model that will be converted into vectors. Below are the primary fields from the model:
+
+- **Patients**: 
+  - `patient_id`, `first_name`, `last_name`, `date_of_birth`, `gender`, `address`, `phone_number`, `email`
+  
+- **Encounters**: 
+  - `encounter_id`, `patient_id`, `provider_id`, `encounter_date`, `encounter_type`, `notes`
+  
+- **Providers**: 
+  - `provider_id`, `first_name`, `last_name`, `specialty_id`, `license_number`, `organization`, `phone_number`, `email`
+  
+- **Conditions**: 
+  - `condition_id`, `patient_id`, `encounter_id`, `condition_code`, `condition_description`
+  
+- **Specialties**: 
+  - `specialty_id`, `specialty_name`, `description`
+
+## Step 2: Preprocess Data
+
+Convert each relevant field into a format suitable for generating vectors:
+
+- **Text Fields**: Use fields like `condition_description`, `notes`, `specialty_name` for direct embedding.
+- **Categorical Fields**: Convert fields like `gender`, `encounter_type` into one-hot encoded vectors or embeddings.
+- **Numeric Fields**: Normalize or standardize fields like `date_of_birth` or other dates.
+
+## Step 3: Generate Vectors Using a Pre-trained LLM
+
+You can use a pre-trained language model such as BERT or GPT to generate vectors.
+
+### Example using Python's `transformers` library:
+
+```python
+from transformers import AutoTokenizer, AutoModel
+import torch
+
+# Load pre-trained model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+model = AutoModel.from_pretrained("bert-base-uncased")
+
+# Example input (e.g., condition_description, notes)
+input_text = "Patient experiencing severe back pain with limited mobility."
+inputs = tokenizer(input_text, return_tensors="pt")
+
+# Generate embeddings
+with torch.no_grad():
+    outputs = model(**inputs)
+    embeddings = outputs.last_hidden_state  # Use last hidden state for embeddings
+
+# embeddings now contains the vector representation of the input text
