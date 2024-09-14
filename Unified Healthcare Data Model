@@ -1,0 +1,248 @@
+## Overview
+
+This repository provides a comprehensive healthcare data model that integrates elements from OMOP, US CDI, and OpenHIE. The model is designed to support a wide range of clinical and non-clinical domains, including specialties such as chiropractic, dental, vision, and therapeutic practices. The goal is to ensure strong data consistency, interoperability, and the ability to perform complex queries across multiple tables in a relational database.
+
+## Entity-Relationship Diagram (ERD)
+
+Below is the Entity-Relationship Diagram (ERD) representing the relationships between the tables in the healthcare data model:
+
+![ERD](path_to_ERD_image.png)
+
+> **Note:** Replace `path_to_ERD_image.png` with the actual path to the ERD image if hosted in the repository.
+
+## SQL Schema Design
+
+The data model consists of several relational tables, each with its corresponding SQL script.
+
+### 1. **Patients Table**
+
+The `patients` table stores demographic and identifying information for each patient.
+
+```sql
+CREATE TABLE patients (
+    patient_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    gender VARCHAR(10) CHECK (gender IN ('Male', 'Female', 'Other')) NOT NULL,
+    address TEXT,
+    phone_number VARCHAR(15),
+    email VARCHAR(100) UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 2. **Encounters Table**
+
+The `encounters` table records patient interactions with healthcare providers, such as visits, consultations, or procedures.
+
+```sql
+CREATE TABLE encounters (
+    encounter_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id UUID REFERENCES patients(patient_id) ON DELETE CASCADE,
+    provider_id UUID REFERENCES providers(provider_id) ON DELETE SET NULL,
+    encounter_date DATE NOT NULL,
+    encounter_type VARCHAR(50) CHECK (encounter_type IN ('Inpatient', 'Outpatient', 'Emergency', 'Consultation')) NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 3. **Providers Table**
+
+The `providers` table stores information about healthcare professionals, including their specialties and credentials.
+
+```sql
+CREATE TABLE providers (
+    provider_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    specialty_id UUID REFERENCES specialties(specialty_id) ON DELETE SET NULL,
+    license_number VARCHAR(20) UNIQUE,
+    organization VARCHAR(100),
+    phone_number VARCHAR(15),
+    email VARCHAR(100) UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 4. **Specialties Table**
+
+The `specialties` table stores information about different healthcare specialties.
+
+```sql
+CREATE TABLE specialties (
+    specialty_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    specialty_name VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 5. **Conditions Table**
+
+The `conditions` table stores medical conditions or diagnoses associated with patients.
+
+```sql
+CREATE TABLE conditions (
+    condition_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id UUID REFERENCES patients(patient_id) ON DELETE CASCADE,
+    encounter_id UUID REFERENCES encounters(encounter_id) ON DELETE CASCADE,
+    condition_code VARCHAR(20) NOT NULL,
+    condition_description TEXT NOT NULL,
+    onset_date DATE NOT NULL,
+    resolution_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 6. **Chiropractic Table**
+
+The `chiropractic` table stores data related to chiropractic care.
+
+```sql
+CREATE TABLE chiropractic (
+    chiropractic_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    encounter_id UUID REFERENCES encounters(encounter_id) ON DELETE CASCADE,
+    adjustment_type VARCHAR(100) NOT NULL,
+    patient_outcome TEXT,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 7. **Dental Table**
+
+The `dental` table stores information on dental care, including procedures, treatments, and follow-ups.
+
+```sql
+CREATE TABLE dental (
+    dental_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    encounter_id UUID REFERENCES encounters(encounter_id) ON DELETE CASCADE,
+    procedure_code VARCHAR(50) NOT NULL,
+    procedure_description TEXT NOT NULL,
+    follow_up_date DATE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 8. **Vision Table**
+
+The `vision` table stores data related to vision care, such as eye exams, prescriptions, and vision therapies.
+
+```sql
+CREATE TABLE vision (
+    vision_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    encounter_id UUID REFERENCES encounters(encounter_id) ON DELETE CASCADE,
+    prescription TEXT NOT NULL,
+    exam_results TEXT,
+    therapy_description TEXT,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 9. **Therapeutic Table**
+
+The `therapeutic` table supports data on various therapeutic practices, including physical therapy, occupational therapy, and other rehabilitation services.
+
+```sql
+CREATE TABLE therapeutic (
+    therapeutic_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    encounter_id UUID REFERENCES encounters(encounter_id) ON DELETE CASCADE,
+    therapy_type VARCHAR(100) NOT NULL,
+    session_count INTEGER NOT NULL,
+    outcome_description TEXT,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 10. **OMOP Mappings Table**
+
+The `omop_mappings` table maps internal data structures to the OMOP Common Data Model, facilitating research and data analysis.
+
+```sql
+CREATE TABLE omop_mappings (
+    omop_mapping_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    internal_code VARCHAR(50) NOT NULL,
+    omop_code VARCHAR(50) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 11. **US CDI Mappings Table**
+
+The `us_cdi_mappings` table maps internal data to the United States Core Data for Interoperability (US CDI) standards, ensuring regulatory compliance.
+
+```sql
+CREATE TABLE us_cdi_mappings (
+    us_cdi_mapping_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    internal_code VARCHAR(50) NOT NULL,
+    us_cdi_code VARCHAR(50) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 12. **OpenHIE Mappings Table**
+
+The `openhie_mappings` table maps data to Open Health Information Exchange (OpenHIE) standards, facilitating data sharing and interoperability.
+
+```sql
+CREATE TABLE openhie_mappings (
+    openhie_mapping_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    internal_code VARCHAR(50) NOT NULL,
+    openhie_code VARCHAR(50) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## Sample Data Inserts
+
+To help users populate the tables, here are some sample data inserts:
+
+```sql
+-- Inserting Sample Patients
+INSERT INTO patients (first_name, last_name, date_of_birth, gender, address, phone_number, email)
+VALUES 
+('John', 'Doe', '1980-05-15', 'Male', '123 Main St, Anytown, USA', '555-555-5555', 'john.doe@example.com'),
+('Jane', 'Roe', '1975-03-22', 'Female', '456 Oak St, Anytown, USA', '555-555-1234', 'jane.roe@example.com');
+
+-- Inserting Sample Specialties
+INSERT INTO specialties (specialty_name, description)
+VALUES 
+('Chiropractic', 'Healthcare discipline focusing on disorders of the musculoskeletal system and nervous system.'),
+('Dental', 'Healthcare discipline focusing on the diagnosis, prevention, and treatment of oral diseases.'),
+('Vision', 'Healthcare discipline focusing on the diagnosis and treatment of eye conditions and vision care.'),
+('Therapeutic', 'Various forms of therapy including physical, occupational, and rehabilitation services.');
+
+-- Inserting Sample Providers
+INSERT INTO providers (first_name, last_name, specialty_id, license_number, organization, phone_number, email)
+VALUES 
+('Jane', 'Smith', (SELECT specialty_id FROM specialties WHERE specialty_name = 'Chiropractic'), 'CH12345', 'HealthCare Group', '555-555-6789', 'jane.smith@healthcare.com'),
+('Emily', 'Jones', (SELECT specialty_id FROM specialties WHERE specialty_name = 'Dental'), 'DN67890', 'DentalCare Center', '555-555-9876', 'emily.jones@dentalcare.com');
+
+-- Inserting Sample Encounters
+INSERT INTO encounters (patient_id, provider_id, encounter_date, encounter_type, notes)
+VALUES 
+((SELECT patient_id FROM patients WHERE first_name = 'John' AND last_name = 'Doe'), 
+ (SELECT provider_id FROM providers WHERE first_name = 'Jane' AND last_name = 'Smith'), 
+ '2024-09-01', 'Outpatient', 'Routine checkup and chiropractic adjustment'),
+
+((
