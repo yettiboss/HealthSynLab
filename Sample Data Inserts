@@ -1,0 +1,31 @@
+To help users populate the tables, here are some sample data inserts:
+
+```sql
+-- Inserting Sample Patients
+INSERT INTO patients (first_name, last_name, date_of_birth, gender, address, phone_number, email)
+VALUES 
+('John', 'Doe', '1980-05-15', 'Male', '123 Main St, Anytown, USA', '555-555-5555', 'john.doe@example.com'),
+('Jane', 'Roe', '1975-03-22', 'Female', '456 Oak St, Anytown, USA', '555-555-1234', 'jane.roe@example.com');
+
+-- Inserting Sample Specialties
+INSERT INTO specialties (specialty_name, description)
+VALUES 
+('Chiropractic', 'Healthcare discipline focusing on disorders of the musculoskeletal system and nervous system.'),
+('Dental', 'Healthcare discipline focusing on the diagnosis, prevention, and treatment of oral diseases.'),
+('Vision', 'Healthcare discipline focusing on the diagnosis and treatment of eye conditions and vision care.'),
+('Therapeutic', 'Various forms of therapy including physical, occupational, and rehabilitation services.');
+
+-- Inserting Sample Providers
+INSERT INTO providers (first_name, last_name, specialty_id, license_number, organization, phone_number, email)
+VALUES 
+('Jane', 'Smith', (SELECT specialty_id FROM specialties WHERE specialty_name = 'Chiropractic'), 'CH12345', 'HealthCare Group', '555-555-6789', 'jane.smith@healthcare.com'),
+('Emily', 'Jones', (SELECT specialty_id FROM specialties WHERE specialty_name = 'Dental'), 'DN67890', 'DentalCare Center', '555-555-9876', 'emily.jones@dentalcare.com');
+
+-- Inserting Sample Encounters
+INSERT INTO encounters (patient_id, provider_id, encounter_date, encounter_type, notes)
+VALUES 
+((SELECT patient_id FROM patients WHERE first_name = 'John' AND last_name = 'Doe'), 
+ (SELECT provider_id FROM providers WHERE first_name = 'Jane' AND last_name = 'Smith'), 
+ '2024-09-01', 'Outpatient', 'Routine checkup and chiropractic adjustment'),
+
+((
