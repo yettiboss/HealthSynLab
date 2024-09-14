@@ -1,0 +1,81 @@
+## Overview
+
+This document outlines the key data domains within the unified healthcare data model. Each domain represents a specific area or category of data that is essential for managing healthcare information in a structured and organized way.
+
+## 1. Patient Domain
+
+- **Table**: `patients`
+- **Description**: 
+  - This domain contains demographic and identifying information about patients. It includes details such as names, dates of birth, gender, contact information, and addresses.
+
+## 2. Encounter Domain
+
+- **Table**: `encounters`
+- **Description**: 
+  - This domain captures the interactions between patients and healthcare providers. Each record in this domain represents a visit, consultation, procedure, or any other form of healthcare service delivered to the patient.
+
+## 3. Provider Domain
+
+- **Table**: `providers`
+- **Description**: 
+  - This domain stores information about healthcare professionals and organizations. It includes data such as the provider's name, specialty, license information, and contact details.
+
+## 4. Condition Domain
+
+- **Table**: `conditions`
+- **Description**: 
+  - The condition domain contains data related to diagnoses or medical conditions associated with a patient's healthcare encounters. It tracks the condition codes (e.g., ICD-10), descriptions, onset, and resolution dates.
+
+## 5. Specialty Domains
+
+These domains store data specific to various healthcare specialties and therapies. Each specialty has its own table that captures relevant details.
+
+### Chiropractic Domain
+
+- **Table**: `chiropractic`
+- **Description**: 
+  - Contains data related to chiropractic care, such as types of adjustments, outcomes, and associated notes.
+
+### Dental Domain
+
+- **Table**: `dental`
+- **Description**: 
+  - Stores information on dental procedures, treatments, and follow-ups, including procedure codes and descriptions.
+
+### Vision Domain
+
+- **Table**: `vision`
+- **Description**: 
+  - Captures data related to vision care, including eye exams, prescriptions, and vision therapies.
+
+### Therapeutic Domain
+
+- **Table**: `therapeutic`
+- **Description**: 
+  - Manages data on various therapeutic practices, such as physical and occupational therapy, including session counts and outcomes.
+
+## 6. Mapping Domains
+
+These domains manage the interoperability and standardization of the data by mapping internal codes to widely accepted healthcare standards.
+
+### OMOP Mapping Domain
+
+- **Table**: `omop_mappings`
+- **Description**: 
+  - Maps internal data codes to the OMOP Common Data Model, facilitating research and standardized data analysis.
+
+### US CDI Mapping Domain
+
+- **Table**: `us_cdi_mappings`
+- **Description**: 
+  - Maps internal codes to the United States Core Data for Interoperability (US CDI) to ensure compliance with national standards.
+
+### OpenHIE Mapping Domain
+
+- **Table**: `openhie_mappings`
+- **Description**: 
+  - Maps internal codes to Open Health Information Exchange (OpenHIE) standards, supporting global interoperability and data sharing.
+
+---
+
+This structured approach to data domains helps ensure that each aspect of healthcare data—from patient demographics to specialized treatments and interoperability standards—is properly organized, accessible, and standardized.
