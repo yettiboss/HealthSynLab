@@ -1,0 +1,14 @@
+These vectors can be stored in a database, indexed for similarity search, or fed into machine learning models.
+
+Example Vectors Based on the Data Model:
+Patient Record Vector:
+Combination of embeddings from the patient’s demographic information, any notes on encounters, and condition descriptions.
+
+Encounter Record Vector:
+A composite of the encounter type, notes, provider’s specialty, and related condition descriptions.
+
+Provider Record Vector:
+Embeddings from the provider’s specialty, organization name, and aggregated descriptions from patient encounters.
+
+Condition Record Vector:
+Focused on the condition description and possibly embeddings from linked encounters and patient demographics.
